@@ -13,7 +13,11 @@ class List(models.Model):
 
 class Todo(models.Model):
     todo = models.CharField(max_length=255)
-    todo_list = models.ForeignKey(List, on_delete=models.CASCADE)
+    todo_list = models.ForeignKey(List, on_delete=models.CASCADE, related_name="todos")
+
+    @property
+    def user(self):
+        self.todo_list.user
 
     def __str__(self):
         return self.todo
