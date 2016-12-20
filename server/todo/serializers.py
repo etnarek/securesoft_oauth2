@@ -27,5 +27,4 @@ class ListSerializerDetail(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         name = validated_data.pop("name")
         user = self.context["request"].user
-        l = List.objects.create(name=name, user=user)
-        return l
+        return List.objects.create(name=name, user=user)
