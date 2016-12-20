@@ -1,2 +1,4 @@
 django
 djangorestframework
+django-oauth-toolkit
+django-bootstrap3

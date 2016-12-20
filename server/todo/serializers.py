@@ -2,13 +2,21 @@ from .models import List, Todo
 from rest_framework import serializers
 
 
-class TodoSerializer(serializers.HyperlinkedModelSerializer):
+class TodoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
-        fields = ('id', 'url', 'todo', 'todo_list')
+        fields = ('id', 'url', 'todo')
 
 
-class ListSerializer(serializers.HyperlinkedModelSerializer):
+
+class TodoSerializerdetail(serializers.ModelSerializer):
+    list_url = serializers.HyperlinkedIdentityField(source="todo_list", view_name="list-detail")
+    class Meta:
+        model = Todo
+        fields = ('id', 'url', 'todo', 'todo_list', "list_url")
+
+
+class ListSerializer(serializers.ModelSerializer):
     class Meta:
         model = List
         fields = ('id', 'url', 'name')
@@ -16,15 +24,10 @@ class ListSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         name = validated_data.pop("name")
         user = self.context["request"].user
-        l = List.objects.create(name=name, user=user)
+        return List.objects.create(name=name, user=user)
 
-class ListSerializerDetail(serializers.HyperlinkedModelSerializer):
+class ListSerializerDetail(serializers.ModelSerializer):
     todos = TodoSerializer(many=True, read_only=True)
     class Meta:
         model = List
         fields = ('id', 'url', 'name', 'todos')
-
-    def create(self, validated_data):
-        name = validated_data.pop("name")
-        user = self.context["request"].user
-        return List.objects.create(name=name, user=user)

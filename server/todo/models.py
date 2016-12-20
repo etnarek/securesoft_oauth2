@@ -17,7 +17,7 @@ class Todo(models.Model):
 
     @property
     def user(self):
-        self.todo_list.user
+        return self.todo_list.user
 
     def __str__(self):
         return self.todo
