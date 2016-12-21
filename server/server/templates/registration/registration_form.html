@@ -3,16 +3,17 @@
 
 <html>
     <head>
-        <title>Login</title>
+        <title>Register</title>
         {% bootstrap_css %}
         {% bootstrap_javascript %}
     </head>
     <body>
         <div class="container">
+            {% with next=request.GET.next %}
             {% bootstrap_messages %}
-            <h1>Login to our wonderful todo-list system.</h1>
+            <h1>Register to our wonderful todo-list system.</h1>
 
-            <form action="{% url "auth_login" %}" method="post" class="form">
+            <form action="{% url "registration_register" %}" method="post" class="form">
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ next }}" />
                 {% bootstrap_form form %}
@@ -22,7 +23,8 @@
                 </button>
                 {% endbuttons %}
             </form>
-            <p class="lead">You can click <a href="{% url "registration_register" %}{% if next %}?next={{next|urlencode}}{% endif %}">here</a> if you want to sign you up.</p>
+            <p class="lead">You can click <a href="{% url "auth_login" %}{% if next %}?next={{next|urlencode}}{% endif %}">here</a> if you want to log you in.</p>
+            {% endwith %}
         </div>
     </body>
 </html>

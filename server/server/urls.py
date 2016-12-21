@@ -19,6 +19,7 @@ from django.contrib.auth import urls as auth_urls
 from rest_framework import routers
 
 from todo.views import ListViewSet, TodoViewSet
+from .views import CustomRegistrationView
 
 router = routers.DefaultRouter()
 router.register(r'lists', ListViewSet)
@@ -30,5 +31,6 @@ urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-    url(r'^accounts/', include(auth_urls)),
+    url(r'^accounts/register/$', CustomRegistrationView.as_view(), name='registration_register'),
+    url(r'^accounts/', include('registration.backends.simple.urls')),
 ]

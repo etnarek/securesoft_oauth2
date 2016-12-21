@@ -118,6 +118,7 @@ REST_FRAMEWORK = {
     ),
 }
 
+ACCOUNT_ACTIVATION_DAYS = 7
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/

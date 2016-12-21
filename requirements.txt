@@ -2,3 +2,5 @@ django
 djangorestframework
 django-oauth-toolkit
 django-bootstrap3
+django-cors-middleware
+django-registration
