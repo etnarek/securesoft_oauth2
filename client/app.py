@@ -133,7 +133,7 @@ def editList(pk):
             flash('Your tweet was too long.')
         else:
             flash('Successfully Updated the list name.')
-        return redirect(url_for('index'))
+        return redirect(url_for('detailList', pk=pk))
     return render_template('edit_list.html', form=form)
 
 @app.route('/<int:pk>')
@@ -167,10 +167,20 @@ def addTodo(list_id):
         print(resp.data)
     return redirect(url_for('detailList', pk=list_id))
 
-def delTodo():
-    pass
+@app.route("/todo/delete/<int:list_id>/<int:pk>")
+@auth_required
+def delTodo(list_id, pk):
+    resp = todo.delete('todos/' + str(pk) + "/", data={"id":pk})
+    if resp.status == 200:
+        flash("Successfully deleted the list")
+    elif resp.status == 401:
+        flash("You are not authorized to acces this element.")
+    else:
+        flash('Unable to load list from server.')
+    return redirect(url_for('detailList', pk=list_id))
 
 @app.route("/todo/edit/<int:list_id>/<int:pk>", methods=["GET", "POST"])
+@auth_required
 def editTodo(list_id, pk):
     resp = todo.get('todos/' + str(pk) + "/")
     todos = None
