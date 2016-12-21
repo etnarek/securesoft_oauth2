@@ -4,3 +4,7 @@ django-oauth-toolkit
 django-bootstrap3
 django-cors-middleware
 django-registration
+flask
+flask_wtf
+flask_bootstrap
+Flask-OAuthlib
