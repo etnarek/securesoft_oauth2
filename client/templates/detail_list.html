@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Task Manager{% endblock %}
+{% block header %}<h1>{{list["name"]}}</h1>{% endblock %}
+{% block content %}
+
+
+<h3>Add todo:</h3>
+{% import "bootstrap/wtf.html" as wtf %}
+{{wtf.quick_form(todoForm, action=url_for("addTodo", list_id=list["id"]), form_type="inline")}}
+
+</br>
+
+<h3>Todos:</h3>
+<div class="list-group">
+{% for todo in list["todos"] %}
+    <a href="{{ url_for("editTodo", list_id=list["id"], pk=todo["id"]) }}" class="list-group-item">{{todo["todo"]|e}}</a>
+{% endfor %}
+</div>
+
+{% endblock %}

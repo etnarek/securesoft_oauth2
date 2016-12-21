@@ -5,6 +5,7 @@ from functools import wraps
 from flask_oauthlib.client import OAuth
 
 import config
+import forms
 
 app = Flask(__name__)
 app.secret_key = config.SECRET
@@ -78,28 +79,123 @@ def index():
     else:
         lists = None
         flash('Unable to load lists from server.')
-    return str(lists)
+    return render_template('index.html', lists=lists, listForm=forms.List())
 
+@auth_required
+@app.route("/add/", methods=["POST"])
 def addList():
-    pass
+    form = forms.List(request.form)
+    if request.method == 'POST' and form.validate():
+        resp = todo.post('lists/', data={
+            'name':  form['name'].data
+        })
+        if resp.status == 403:
+            flash('Your tweet was too long.')
+        else:
+            flash('Successfully tweeted your tweet (ID: #%s)' % resp.data['id'])
+    return redirect(url_for('index'))
 
-def deleteList():
-    pass
+@auth_required
+@app.route("/delete/<int:pk>")
+def deleteList(pk):
+    resp = todo.delete('lists/' + str(pk) + "/", data={"id":pk})
+    if resp.status == 200:
+        flash("Successfully deleted the list")
+    elif resp.status == 401:
+        flash("You are not authorized to acces this element.")
+    else:
+        flash('Unable to load list from server.')
+    return redirect(url_for('index'))
 
-def editList():
-    pass
+@app.route("/edit/<int:pk>", methods=["GET", "POST"])
+@auth_required
+def editList(pk):
+    resp = todo.get('lists/' + str(pk) + "/")
+    lists = None
+    if resp.status == 200:
+        lists = resp.data
+    elif resp.status == 401:
+        flash("You are not authorized to acces this element.")
+        return redirect(url_for('index'))
+    else:
+        flash('Unable to load list from server.')
+        return redirect(url_for('index'))
+    print(lists)
 
-def detailList():
-    pass
+    form = forms.List(request.form, data=lists)
+    if request.method == 'POST' and form.validate():
+        resp = todo.put('lists/'+str(pk)+"/", data={
+            'name':  form['name'].data
+        })
+        if resp.status == 401:
+            flash("You are not authorized to acces this element.")
+        elif resp.status == 403:
+            flash('Your tweet was too long.')
+        else:
+            flash('Successfully Updated the list name.')
+        return redirect(url_for('index'))
+    return render_template('edit_list.html', form=form)
 
-def addTodo():
-    pass
+@app.route('/<int:pk>')
+@auth_required
+def detailList(pk):
+    resp = todo.get('lists/' + str(pk) + "/")
+    lists = None
+    if resp.status == 200:
+        lists = resp.data
+    elif resp.status == 401:
+        flash("You are not authorized to access this element.")
+    else:
+        flash('Unable to load list from server.')
+    return render_template('detail_list.html', todoForm=forms.Todo(), list=lists)
+
+@app.route("/todo/add/<int:list_id>", methods=["POST"])
+@auth_required
+def addTodo(list_id):
+    form = forms.Todo(request.form)
+    if request.method == 'POST' and form.validate():
+        resp = todo.post('todos/', data={
+            'todo': form['todo'].data,
+            'todo_list' : list_id
+        })
+        if resp.status == 401:
+            flash("You are not authorized to acces this element.")
+        elif resp.status == 403:
+            flash('Your tweet was too long.')
+        else:
+            flash('Successfully added your task.')
+        print(resp.data)
+    return redirect(url_for('detailList', pk=list_id))
 
 def delTodo():
     pass
 
-def editTodo():
-    pass
+@app.route("/todo/edit/<int:list_id>/<int:pk>", methods=["GET", "POST"])
+def editTodo(list_id, pk):
+    resp = todo.get('todos/' + str(pk) + "/")
+    todos = None
+    if resp.status == 200:
+        todos = resp.data
+    elif resp.status == 401:
+        flash("You are not authorized to acces this element.")
+        return redirect(url_for('index'))
+    else:
+        flash('Unable to load todo from server.')
+        return redirect(url_for('detailList', pk=list_id))
+
+    form = forms.Todo(request.form, data=todos)
+    if request.method == 'POST' and form.validate():
+        resp = todo.put('todos/'+str(pk)+"/", data={
+            'todo':  form['todo'].data
+        })
+        if resp.status == 401:
+            flash("You are not authorized to acces this element.")
+        elif resp.status == 403:
+            flash('Your tweet was too long.')
+        else:
+            flash('Successfully Updated the list name.')
+        return redirect(url_for('detailList', pk=list_id))
+    return render_template('edit_todo.html', form=form)
 
 if __name__ == "__main__":
     app.run(debug=config.DEBUG, host="0.0.0.0", port=8000)
