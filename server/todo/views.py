@@ -31,3 +31,7 @@ class TodoViewSet(viewsets.ModelViewSet):
     def retrieve(self, *args, **kwargs):
         self.serializer_class = TodoSerializerdetail
         return super(TodoViewSet, self).retrieve(*args, **kwargs)
+
+    def create(self, *args, **kwargs):
+        self.serializer_class = TodoSerializerdetail
+        return super(TodoViewSet, self).create(*args, **kwargs)
