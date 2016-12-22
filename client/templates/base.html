@@ -1,3 +1,4 @@
+{% import "bootstrap/utils.html" as utils %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -12,6 +13,7 @@
     <body>
         {% include "nav.html" %}
         {% block fullpage %}
+        {{ utils.flashed_messages() }}
         <div class="container">
             <div class="page-header">
                 {% block header %}{% endblock %}

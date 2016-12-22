@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Task Manager{% endblock %}
-{% block header %}<h1>{{list["name"]}}</h1>{% endblock %}
+{% block header %}<h1>{{list["name"]|e}}</h1>{% endblock %}
 {% block content %}
 
 <div class="btn-group" role="group" aria-label="...">
