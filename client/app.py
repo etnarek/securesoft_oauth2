@@ -149,4 +149,4 @@ def editTodo(list_id, pk):
     return render_template('edit_todo.html', form=form)
 
 if __name__ == "__main__":
-    app.run(debug=config.DEBUG, host="0.0.0.0", port=8000)
+    app.run(debug=config.DEBUG, host="127.0.0.1", port=3032)
