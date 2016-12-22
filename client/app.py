@@ -32,7 +32,7 @@ def get_todo_teken(token=None):
 
 @app.route('/login')
 def login():
-    return "We are going to connect you with " + config.SERVER_URL + "\n clik here to continue: <a href=/log>login</a>"
+    return render_template("login.html")
 
 @app.route('/log')
 def log():
