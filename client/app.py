@@ -37,7 +37,7 @@ def login():
 
 @app.route('/log')
 def log():
-    return todo.authorize(callback=urljoin(request.url_root, url_for('oauth_authorized', next=None)))
+    return todo.authorize(callback=urljoin(config.SERVER_NAME, url_for('oauth_authorized', next=None)))
 
 
 @app.route('/oauth-authorized')

@@ -7,6 +7,8 @@ SERVER_URL = "https://oauthserver.etnarek.com/"
 TOKEN_URL = "o/token/"
 AUTHORIZATION_URL = "o/authorize"
 
+SERVER_NAME = "http://127.0.0.1:5000/"
+
 try:
     from local_config import *
 except ImportError:
