@@ -3,10 +3,11 @@
 {% block header %}<h1>{{list["name"]|e}}</h1>{% endblock %}
 {% block content %}
 
-<div class="btn-group" role="group" aria-label="...">
-    <a href="{{ url_for("editList", pk=list["id"]) }}" class="btn btn-warning">Edit name</a>
-    <a href="{{ url_for("deleteList", pk=list["id"]) }}" class="btn btn-danger">delete list</a>
-</div>
+<a href="{{ url_for("editList", pk=list["id"]) }}" class="btn btn-warning"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit name</a>
+<form action="{{ url_for("deleteList", pk=list["id"]) }}" method="POST" class="form-inline">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete list</button>
+</form>
 
 <h3>Add todo:</h3>
 {% import "bootstrap/wtf.html" as wtf %}
@@ -15,14 +16,21 @@
 </br>
 
 <h3>Todos:</h3>
-<div class="list-group">
-{% for todo in list["todos"] %}
-        <li class=list-group-item>
-            {{todo["todo"]|e}}
-            <span class="badge"><a href={{ url_for("delTodo", list_id=list["id"], pk=todo["id"])}} class="badge"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></span>
-            <span class="badge"><a href="{{ url_for("editTodo", list_id=list["id"], pk=todo["id"]) }}" class="badge"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a></span>
-        </li>
-{% endfor %}
-</div>
+<table class="table table-hover">
+    {% for todo in list["todos"] %}
+    <tr>
+        <td class="col-md-12">{{todo["todo"]|e}}</td>
+        <td>
+            <a href="{{ url_for("editTodo", list_id=list["id"], pk=todo["id"]) }}" class="btn btn-warning"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a>
+        </td>
+        <td>
+            <form action="{{ url_for("delTodo", list_id=list["id"], pk=todo["id"])}}" method="POST" class="form-horizontal" >
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
 
 {% endblock %}

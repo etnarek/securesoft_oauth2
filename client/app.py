@@ -2,6 +2,7 @@ from flask import Flask, render_template, g, Markup, request, url_for, redirect,
 from flask_wtf.csrf import CsrfProtect
 from flask_bootstrap import Bootstrap
 from flask_oauthlib.client import OAuth
+from datetime import timedelta
 
 import config
 import forms
@@ -46,16 +47,18 @@ def oauth_authorized(resp):
         flash(u'You denied the request to sign in.')
         return redirect(next_url)
 
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(seconds=35000)
     session['todo_token'] = (
         resp['access_token'],
         resp['refresh_token']
     )
 
-    flash('You were signed in.')
+    flash('You are signed in.')
     return redirect(next_url)
 
 
-@app.route("/logout")
+@app.route("/logout", methods=["POST"])
 def logout():
     session.clear()
     return redirect(url_for('index'))
@@ -79,7 +82,7 @@ def addList():
     return redirect(url_for('index'))
 
 @utils.auth_required
-@app.route("/delete/<int:pk>")
+@app.route("/delete/<int:pk>", methods=["POST"])
 def deleteList(pk):
     utils.delete(todo, "lists/%d/" % pk, {"id":pk})
     return redirect(url_for('index'))
@@ -122,7 +125,7 @@ def addTodo(list_id):
         )
     return redirect(url_for('detailList', pk=list_id))
 
-@app.route("/todo/delete/<int:list_id>/<int:pk>")
+@app.route("/todo/delete/<int:list_id>/<int:pk>", methods=["POST"])
 @utils.auth_required
 def delTodo(list_id, pk):
     utils.delete(todo, "todos/%d/" % pk, {"id":pk})
