@@ -3,6 +3,7 @@ from flask_wtf.csrf import CsrfProtect
 from flask_bootstrap import Bootstrap
 from flask_oauthlib.client import OAuth
 from datetime import timedelta
+from urllib.parse import urljoin
 
 import config
 import forms
@@ -36,7 +37,7 @@ def login():
 
 @app.route('/log')
 def log():
-    return todo.authorize(callback="http://127.0.0.1:5000"+url_for('oauth_authorized', next=None))
+    return todo.authorize(callback=urljoin(request.url_root, url_for('oauth_authorized', next=None)))
 
 
 @app.route('/oauth-authorized')
