@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.core.exceptions import PermissionDenied
 
 from .models import List, Todo
 from rest_framework import viewsets, permissions
@@ -11,9 +12,10 @@ class ListViewSet(viewsets.ModelViewSet):
     serializer_class = ListSerializer
     permission_classes = (IsOwner, permissions.IsAuthenticated)
 
-    def get_queryset(self):
+    def list(self, request):
         user = self.request.user
-        return List.objects.filter(user=user)
+        self.queryset = self.queryset.filter(user=user)
+        return super(ListViewSet, self).list(request)
 
     def retrieve(self, *args, **kwargs):
         self.serializer_class = ListSerializerDetail
@@ -24,14 +26,20 @@ class TodoViewSet(viewsets.ModelViewSet):
     serializer_class = TodoSerializer
     permission_classes = (IsOwner, permissions.IsAuthenticated)
 
-    def get_queryset(self):
+    def list(self, request):
         user = self.request.user
-        return Todo.objects.filter(todo_list__user=user)
+        self.queryset = self.queryset.filter(todo_list__user=user)
+        return super(TodoViewSet, self).list(request)
 
     def retrieve(self, *args, **kwargs):
         self.serializer_class = TodoSerializerdetail
         return super(TodoViewSet, self).retrieve(*args, **kwargs)
 
-    def create(self, *args, **kwargs):
+    def create(self, request):
+        list_id = request.POST.get("todo_list")
+        lists = get_object_or_404(List, pk=list_id)
+        if lists.user != request.user:
+            raise PermissionDenied
         self.serializer_class = TodoSerializerdetail
-        return super(TodoViewSet, self).create(*args, **kwargs)
+
+        return super(TodoViewSet, self).create(request)
